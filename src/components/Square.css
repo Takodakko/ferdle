@@ -1,0 +1,34 @@
+.square {
+    height: 80px;
+    width: 80px;
+    border: solid;
+    border-color: white;
+    margin: 5px;
+    color: black;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-enter-key {
+    height: 80px;
+    width: 170px;
+    border: solid;
+    border-color: white;
+    margin: 5px;
+    color: black;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(219, 213, 213);
+  }
+
+.correct {
+    background-color: lime;
+}
+
+.partial {
+    background-color: yellow;
+}
