@@ -11,6 +11,10 @@
     justify-content: center;
 }
 
+.current-row-square {
+    border-color: red;
+}
+
 .delete-enter-key {
     height: 40px;
     width: 80px;

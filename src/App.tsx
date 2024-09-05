@@ -73,40 +73,62 @@ function App() {
   const hiddenInput = useId();
   const hiddenInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    let fiveCorrect = 0;
+  const fiveCorrect = useMemo(() => {
+    let count = 0;
     for (let key in keyBoardStatus) {
       if (keyBoardStatus[key] === 'correct') {
-        fiveCorrect += 1;
+        count += 1;
       }
     }
+    return count;
+  }, [keyBoardStatus]);
+
+  useEffect(() => {
     if (fiveCorrect === 5) {
       setTimeout(() => {
         setGameWinState('won');
       }, 500);
-      
     }
     if (currentRow === 6 && fiveCorrect !== 5) {
       setTimeout(() => {
         setGameWinState('lost');
       }, 500);
-      
     }
-  }, [currentRow]);
+  }, [currentRow, fiveCorrect]);
 
   function enterLetterChoice() {
+    if (fiveCorrect === 5) return;
     if (typedLetters.length !== 5) return;
+    
     const newTyped = [...typedLetters];
     const newKeyBoard = {...keyBoardStatus};
     const newSquareStatuses = {...squareStatuses};
+    const numberOfEachLetter: Record<string, number> = {};
+    
+    correctLetters.forEach((l) => {
+      if (numberOfEachLetter.hasOwnProperty(l)) {
+        numberOfEachLetter[l] += 1;
+      } else {
+        numberOfEachLetter[l] = 1;
+      }
+    });
     
     newTyped.forEach((letter, index) => {
       if (correctLetters[index] === letter) {
+        numberOfEachLetter[letter] -= 1;
         newKeyBoard[letter] = 'correct';
         newSquareStatuses[currentRow][index] = 'correct';
       } else if (correctLetters[index] !== letter && correctLetters.includes(letter)) {
-        newKeyBoard[letter] = 'partial';
-        newSquareStatuses[currentRow][index] = 'partial';
+        if (numberOfEachLetter[letter] > 0) {
+          newSquareStatuses[currentRow][index] = 'partial';
+          numberOfEachLetter[letter] -= 1;
+        } else {
+          newSquareStatuses[currentRow][index] = 'no';
+        }
+        if (newKeyBoard[letter] !== 'correct') {
+          newKeyBoard[letter] = 'partial';
+        }
+        
       } else {
         newKeyBoard[letter] = 'no';
         newSquareStatuses[currentRow][index] = 'no';
@@ -119,7 +141,7 @@ function App() {
   };
 
   function addDeleteTypedLetters(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (currentRow > 5) return;
+    if (currentRow > 5 || fiveCorrect === 5) return;
     if (event.ctrlKey || event.metaKey || event.altKey) {
       return;
     }
@@ -148,14 +170,14 @@ function App() {
   };
 
   const clickAddLetterToTyped: clickAddLetterType = function(letter: string) {
-    if (currentRow > 5) return;
+    if (currentRow > 5 || fiveCorrect === 5) return;
     if (typedLetters.length === 5) {
       return;
     } else {
       if (letter === 'Del' || letter === 'Ent') return;
       const newEnteredLetters = [...enteredLetters];
       const newTyped = [...typedLetters];
-      console.log(newTyped, 'newTyped')
+      
       newTyped.push(letter.toUpperCase());
       newEnteredLetters[currentRow] = [...newTyped];
 
@@ -169,7 +191,7 @@ function App() {
   };
 
   const clickDeleteLetter: clickDeleteLetterType = function() {
-    if (currentRow > 5) return;
+    if (currentRow > 5 || fiveCorrect === 5) return;
     if (typedLetters.length === 0) {
       return;
     } else {
@@ -205,7 +227,7 @@ function App() {
       for (let i = 0; i < 5; i++) {
         const enteredLetter = enteredLetters[j][i];
         const status = squareStatuses[j][i];
-        const aSquare = <Square key={`${i}-${j}`} squareStatus={status} enteredLetter={enteredLetter}/>;
+        const aSquare = <Square key={`${i}-${j}`} squareStatus={status} enteredLetter={enteredLetter} currentRow={currentRow === j}/>;
         row.push(aSquare);
       }
       box.push(row);

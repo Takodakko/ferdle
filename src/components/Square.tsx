@@ -1,16 +1,15 @@
 import { squareStatus } from '../appTypes';
 import './Square.css';
 
-function Square(props: {squareStatus: squareStatus, enteredLetter: string}) {
-    const { squareStatus, enteredLetter } = props;
+function Square(props: {squareStatus: squareStatus, enteredLetter: string, currentRow: boolean}) {
+    const { squareStatus, enteredLetter, currentRow } = props;
     const squareClass = () => {
-        if (squareStatus === 'correct') {
-            return 'square correct';
-        } else if (squareStatus === 'partial') {
-            return 'square partial';
-        } else {
-            return 'square';
+        let squareClass = 'square';
+        if (currentRow) {
+            squareClass = squareClass + ' current-row-square';
         }
+        squareClass = squareClass + ` ${squareStatus}`;
+        return squareClass;
     };
     return (
         <div className={squareClass()}>
