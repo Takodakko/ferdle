@@ -88,3 +88,20 @@
 .keyboard-key {
   background-color: rgb(219, 213, 213);
 }
+
+.hidden-input {
+  background-color: inherit;
+  border: none;
+  opacity: 0%;
+  height: 1px;
+}
+
+.hidden-input:focus,
+.hidden-input:focus-visible {
+  border: none;
+  outline: 0px auto;
+}
+
+cursor {
+  opacity: 0%;
+}

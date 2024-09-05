@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useId, useRef } from 'react'
 import Square from './components/Square';
 import './App.css';
 import { 
@@ -13,6 +13,9 @@ import {
 import KeyBoardRow from './components/KeyBoardRow';
 import LetterKey from './components/LetterKey';
 import WinScreen from './components/WinScreen';
+import assets from './assets';
+const voice = assets.voice;
+const face = assets.face;
 
 function App() {
   const initialSquareStatusesRow: squareStatus[] = new Array(5).fill('no');
@@ -67,7 +70,8 @@ function App() {
   const [typedLetters, setTypedLetters] = useState<string[]>([]);
   const [currentRow, setCurrentRow] = useState(0);
   const [gameWinState, setGameWinState] = useState<gameWinStateType>('playing');
-  const wholeScreen = useRef(null);
+  const hiddenInput = useId();
+  const hiddenInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let fiveCorrect = 0;
@@ -77,10 +81,16 @@ function App() {
       }
     }
     if (fiveCorrect === 5) {
-      setGameWinState('won');
+      setTimeout(() => {
+        setGameWinState('won');
+      }, 500);
+      
     }
-    if (currentRow === 5 && fiveCorrect !== 5) {
-      setGameWinState('lost');
+    if (currentRow === 6 && fiveCorrect !== 5) {
+      setTimeout(() => {
+        setGameWinState('lost');
+      }, 500);
+      
     }
   }, [currentRow]);
 
@@ -108,27 +118,19 @@ function App() {
     setSquareStatuses({...newSquareStatuses});
   };
 
-  function addDeleteTypedLetters(event: React.KeyboardEvent<HTMLDivElement>) {
-  // function addDeleteTypedLetters(event: any) {
-  console.log(event.code)
+  function addDeleteTypedLetters(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (currentRow > 5) return;
     if (event.ctrlKey || event.metaKey || event.altKey) {
-      console.log(event);
       return;
     }
     event.preventDefault();
+    
     const letters = /^[a-zA-Z]+$/;
     const pressedKey = event.key;
-    console.log(pressedKey);
-    // if (typedLetters.length === 0 || typedLetters.length === 5) {
-    //   return;
-    // }
+    
     if (pressedKey === 'Delete' || pressedKey === 'Backspace') {
       if (typedLetters.length === 0) return;
       clickDeleteLetter();
-      return;
-    } else if (letters.test(pressedKey)) {
-      console.log('letter key')
-      clickAddLetterToTyped(pressedKey.toUpperCase());
       return;
     } else if (pressedKey === 'Enter') {
       if (typedLetters.length < 5) {
@@ -137,12 +139,16 @@ function App() {
         enterLetterChoice();
         return;
       }
-    } else {
+    } else if (letters.test(pressedKey)) {
+      clickAddLetterToTyped(pressedKey.toUpperCase());
+      return;
+    }  else {
       return;
     }
   };
 
   const clickAddLetterToTyped: clickAddLetterType = function(letter: string) {
+    if (currentRow > 5) return;
     if (typedLetters.length === 5) {
       return;
     } else {
@@ -163,6 +169,7 @@ function App() {
   };
 
   const clickDeleteLetter: clickDeleteLetterType = function() {
+    if (currentRow > 5) return;
     if (typedLetters.length === 0) {
       return;
     } else {
@@ -180,20 +187,16 @@ function App() {
   };
 
   useEffect(() => {
-    if (gameWinState === 'playing') {
-      document.body.addEventListener('keydown', (e: any) => addDeleteTypedLetters(e));
-    } else {
-      document.body.removeEventListener('keydown', (e: any) => addDeleteTypedLetters(e));
+    if (gameWinState === 'playing' && hiddenInputRef.current) {
+      hiddenInputRef.current.focus();
     }
-  }, [gameWinState]);
-
-  // useEffect(() => {
-  //   if (wholeScreen.current) {
-  //     const focusNow = wholeScreen.current;
-  //     focusNow.focus();
-  //   }
-  // }, [wholeScreen]);
+  });
   
+  const refocusInput = function() {
+    if (gameWinState === 'playing' && hiddenInputRef.current) {
+      hiddenInputRef.current.focus();
+    }
+  };
 
   const squares = useMemo(() => {
     const box = [];
@@ -210,17 +213,6 @@ function App() {
     return box;
   }, [squareStatuses, enteredLetters]);
 
-  const guessed = function() {
-    const array = [];
-    for (let key in keyBoardStatus) {
-      const val = keyBoardStatus[key];
-      if (val !== 'unchosen' && val !== 'typed') {
-        array.push(key);
-      }
-    }
-    return array;
-  }
-
   const playAgain: playAgainType = function() {
     setKeyBoardStatus(initialKeyBoardStatus);
     setSquareStatuses(initialSquareStatuses);
@@ -232,12 +224,13 @@ function App() {
 
   return (
     <div>
-      {gameWinState === 'won' || gameWinState === 'lost' ? <WinScreen wonOrLost={gameWinState} playAgain={playAgain}/> : 
+      <label htmlFor={hiddenInput}></label>
+      <input onBlur={refocusInput} ref={hiddenInputRef} name="hidden-input" id={hiddenInput} className="hidden-input" autoFocus={true} onKeyDown={(e) => addDeleteTypedLetters(e)}></input>
+      {gameWinState === 'won' || gameWinState === 'lost' ? <WinScreen face={face} voice={voice} wonOrLost={gameWinState} playAgain={playAgain}/> : 
       <div className="whole-display">
         <h1>
           Ferdle
         </h1>
-        {typedLetters}
         <div className="square-container">
           {squares.map((row, ind) => {
             return <div key={ind} className="answer-square-row-container">{row}</div>

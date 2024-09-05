@@ -1,6 +1,6 @@
 .square {
-    height: 80px;
-    width: 80px;
+    height: 40px;
+    width: 40px;
     border: solid;
     border-color: white;
     margin: 5px;
@@ -12,8 +12,8 @@
 }
 
 .delete-enter-key {
-    height: 80px;
-    width: 170px;
+    height: 40px;
+    width: 80px;
     border: solid;
     border-color: white;
     margin: 5px;

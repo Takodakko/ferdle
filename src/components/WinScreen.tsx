@@ -1,18 +1,24 @@
-import assets from '../assets';
-const voice = assets.voice;
-const face = assets.face;
 import { playAgainType, gameWinStateType } from '../appTypes';
+import { useRef, useEffect } from 'react';
 
-function WinScreen(props: {playAgain: playAgainType, wonOrLost: gameWinStateType}) {
-    const { playAgain, wonOrLost } = props;
+function WinScreen(props: {playAgain: playAgainType, wonOrLost: gameWinStateType, voice: string, face: string}) {
+    const { playAgain, wonOrLost, voice, face } = props;
+    const playAgainButton = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        if (playAgainButton.current !== null && wonOrLost === 'won' || wonOrLost === 'lost') {
+            playAgainButton.current?.focus();
+        }
+    }, [playAgainButton.current, wonOrLost]);
+
     const displayFace = wonOrLost === 'won' ? <div>
-    <img src={face}></img>
+    <img style={{height: '50%', width: '50%'}} src={face}></img>
     <audio autoPlay={true} src={voice}></audio>
   </div> : <div>How ignoble of you!</div>;
   return (
     <div>
         {displayFace}
-        <button onClick={playAgain}>Play Again?</button>
+        <button ref={playAgainButton} onClick={playAgain}>Play Again?</button>
     </div>
   )
 };
