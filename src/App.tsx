@@ -30,7 +30,65 @@ function App() {
 
   const initialEnteredLetters: string[][] = [[], [], [], [], [], []];
 
-  const correctLetters = ['A', 'E', 'G', 'I', 'R'];
+  const answers: string[][] = [
+    ['A', 'E', 'G', 'I', 'R'],
+    ['L', 'A', 'N', 'C', 'E'],
+    ['H', 'I', 'L', 'D', 'A'],
+    ['S', 'W', 'O', 'R', 'D'],
+    ['P', 'E', 'T', 'R', 'A'],
+    ['C', 'R', 'E', 'S', 'T'],
+    ['F', 'L', 'A', 'Y', 'N'],
+    ['T', 'H', 'I', 'E', 'F'],
+    ['A', 'S', 'H', 'E', 'N'],
+    ['H', 'O', 'L', 'S', 'T'],
+    ['L', 'E', 'V', 'I', 'N'],
+    ['A', 'L', 'O', 'I', 'S'],
+    ['U', 'B', 'E', 'R', 'T'],
+    ['F', 'E', 'L', 'I', 'X'],
+    ['C', 'Y', 'R', 'I', 'L'],
+    ['E', 'S', 'S', 'A', 'R'],
+    ['B', 'L', 'A', 'C', 'K'],
+    ['L', 'I', 'O', 'N', 'S'],
+    ['N', 'O', 'B', 'L', 'E'],
+    ['B', 'R', 'A', 'V', 'E'],
+    ['D', 'E', 'V', 'I', 'L'],
+    ['D', 'E', 'M', 'O', 'N'],
+    ['S', 'T', 'E', 'E', 'L'],
+    ['V', 'E', 'N', 'I', 'N'],
+    ['I', 'N', 'D', 'R', 'A'],
+    ['S', 'P', 'E', 'A', 'R'],
+    ['A', 'S', 'S', 'A', 'L'],
+    ['M', 'A', 'G', 'I', 'C'],
+    ['V', 'A', 'J', 'R', 'A'],
+    ['A', 'U', 'B', 'I', 'N'],
+    ['B', 'E', 'A', 'S', 'T'],
+    ['S', 'P', 'E', 'E', 'D'],
+    ['S', 'T', 'A', 'F', 'F'],
+    ['F', 'A', 'I', 'T', 'H'],
+    ['A', 'E', 'G', 'I', 'S'],
+    ['D', 'R', 'O', 'M', 'I'],
+    ['C', 'H', 'E', 'S', 'T'],
+    ['T', 'O', 'R', 'C', 'H'],
+    ['A', 'G', 'N', 'E', 'A'],
+    ['H', 'A', 'D', 'E', 'S'],
+    ['S', 'W', 'A', 'R', 'M'],
+    ['B', 'R', 'A', 'W', 'L'],
+    ['F', 'A', 'I', 'R', 'E'],
+    ['R', 'A', 'L', 'L', 'Y'],
+    ['C', 'H', 'A', 'R', 'M'],
+    ['W', 'R', 'A', 'T', 'H'],
+    ['A', 'S', 'T', 'R', 'A'],
+    ['S', 'H', 'O', 'V', 'E'],
+    ['S', 'M', 'I', 'T', 'E'],
+    ['B', 'L', 'A', 'Z', 'E'],
+    ['S', 'A', 'U', 'N', 'A'],
+    ['M', 'I', 'G', 'H', 'T'],
+    ['D', 'E', 'D', 'U', 'E'],
+    ['C', 'L', 'A', 'S', 'S'],
+    ['H', 'O', 'U', 'S', 'E'],
+  ];
+  
+  //const correctLetters = ['A', 'E', 'G', 'I', 'R'];
   const row1Letters = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
   const row2Letters = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
   const row3Letters = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
@@ -64,12 +122,23 @@ function App() {
     'Z': 'unchosen',
   };
 
+  const [gameWinState, setGameWinState] = useState<gameWinStateType>('playing');
   const [enteredLetters, setEnteredLetters] = useState(initialEnteredLetters);
   const [keyBoardStatus, setKeyBoardStatus] = useState(initialKeyBoardStatus);
   const [squareStatuses, setSquareStatuses] = useState<squareStatusGrid>(initialSquareStatuses);
   const [typedLetters, setTypedLetters] = useState<string[]>([]);
   const [currentRow, setCurrentRow] = useState(0);
-  const [gameWinState, setGameWinState] = useState<gameWinStateType>('playing');
+  const [currentCorrect, setCurrentCorrect] = useState('');
+  // const [shakeClass, setShakeClass] = useState('');
+
+  // const shakeClassCss = useMemo(() => {
+  //   return shakeClass;
+  // }, [shakeClass]);
+
+  const correctLetters = useMemo(() => {
+    return answers[Math.floor(Math.random() * answers.length)];
+  }, [gameWinState]);
+  
   const hiddenInput = useId();
   const hiddenInputRef = useRef<HTMLInputElement>(null);
 
@@ -84,6 +153,7 @@ function App() {
   }, [keyBoardStatus]);
 
   useEffect(() => {
+    setCurrentCorrect(correctLetters.join(''));
     if (fiveCorrect === 5) {
       setTimeout(() => {
         setGameWinState('won');
@@ -97,8 +167,15 @@ function App() {
   }, [currentRow, fiveCorrect]);
 
   function enterLetterChoice() {
+    console.log(correctLetters, 'correct')
     if (fiveCorrect === 5) return;
-    if (typedLetters.length !== 5) return;
+    if (typedLetters.length !== 5) {
+      // setShakeClass('shaking-screen');
+      // setTimeout(() => {
+      //   setShakeClass('');
+      // }, 1000);
+      return;
+    }
     
     const newTyped = [...typedLetters];
     const newKeyBoard = {...keyBoardStatus};
@@ -118,6 +195,16 @@ function App() {
         numberOfEachLetter[letter] -= 1;
         newKeyBoard[letter] = 'correct';
         newSquareStatuses[currentRow][index] = 'correct';
+        numberOfEachLetter[letter] -= 1;
+        if (numberOfEachLetter[letter] < 0) {
+          const partialInd = newTyped.findIndex((l, i) => {
+            if (l === letter && newSquareStatuses[currentRow][i] === 'partial') {
+              return true;
+            }
+            return false;
+          });
+          newSquareStatuses[currentRow][partialInd] = 'no';
+        }
       } else if (correctLetters[index] !== letter && correctLetters.includes(letter)) {
         if (numberOfEachLetter[letter] > 0) {
           newSquareStatuses[currentRow][index] = 'partial';
@@ -248,14 +335,14 @@ function App() {
     <div>
       <label htmlFor={hiddenInput}></label>
       <input onBlur={refocusInput} ref={hiddenInputRef} name="hidden-input" id={hiddenInput} className="hidden-input" autoFocus={true} onKeyDown={(e) => addDeleteTypedLetters(e)}></input>
-      {gameWinState === 'won' || gameWinState === 'lost' ? <WinScreen face={face} voice={voice} wonOrLost={gameWinState} playAgain={playAgain}/> : 
-      <div className="whole-display">
+      {gameWinState === 'won' || gameWinState === 'lost' ? <WinScreen winWord={currentCorrect} face={face} voice={voice} wonOrLost={gameWinState} playAgain={playAgain}/> : 
+      <div className={"whole-display"}>
         <h1>
           Ferdle
         </h1>
-        <div className="square-container">
+        <div className={"square-container"}>
           {squares.map((row, ind) => {
-            return <div key={ind} className="answer-square-row-container">{row}</div>
+            return <div key={ind} className={"answer-square-row-container "}>{row}</div>
           })}
         </div>
         <div className="keyboard">
