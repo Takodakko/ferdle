@@ -167,7 +167,7 @@ function App() {
   }, [currentRow, fiveCorrect]);
 
   function enterLetterChoice() {
-    console.log(correctLetters, 'correct')
+    // console.log(correctLetters, 'correct')
     if (fiveCorrect === 5) return;
     if (typedLetters.length !== 5) {
       // setShakeClass('shaking-screen');
