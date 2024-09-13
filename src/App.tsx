@@ -2,157 +2,86 @@ import { useState, useMemo, useEffect, useId, useRef } from 'react'
 import Square from './components/Square';
 import './App.css';
 import { 
-  squareStatus, 
   clickAddLetterType, 
-  clickDeleteLetterType, 
-  ILetterStatus,
-  squareStatusGrid,
+  clickDeleteLetterType,
   gameWinStateType,
   playAgainType,
  } from './appTypes';
 import KeyBoardRow from './components/KeyBoardRow';
 import LetterKey from './components/LetterKey';
 import WinScreen from './components/WinScreen';
+import CorrectGuessList from './components/CorrectGuessList';
+import { answers,
+  initialKeyBoardStatus,
+  initialSquareStatuses,
+  initialEnteredLetters,
+  row1Letters,
+  row2Letters,
+  row3Letters
+} from './hardcoded';
+import { denestSquareStatusGrid, denestArrayOfArrays } from './util/denest';
 import assets from './assets';
 const voice = assets.voice;
 const face = assets.face;
 
 function App() {
-  const initialSquareStatusesRow: squareStatus[] = new Array(5).fill('no');
-  const initialSquareStatuses: squareStatusGrid = [
-    [...initialSquareStatusesRow],
-    [...initialSquareStatusesRow],
-    [...initialSquareStatusesRow],
-    [...initialSquareStatusesRow],
-    [...initialSquareStatusesRow],
-    [...initialSquareStatusesRow],
-  ];
 
-  const initialEnteredLetters: string[][] = [[], [], [], [], [], []];
-
-  const answers: string[][] = [
-    ['A', 'E', 'G', 'I', 'R'],
-    ['L', 'A', 'N', 'C', 'E'],
-    ['H', 'I', 'L', 'D', 'A'],
-    ['S', 'W', 'O', 'R', 'D'],
-    ['P', 'E', 'T', 'R', 'A'],
-    ['C', 'R', 'E', 'S', 'T'],
-    ['F', 'L', 'A', 'Y', 'N'],
-    ['T', 'H', 'I', 'E', 'F'],
-    ['A', 'S', 'H', 'E', 'N'],
-    ['H', 'O', 'L', 'S', 'T'],
-    ['L', 'E', 'V', 'I', 'N'],
-    ['A', 'L', 'O', 'I', 'S'],
-    ['U', 'B', 'E', 'R', 'T'],
-    ['F', 'E', 'L', 'I', 'X'],
-    ['C', 'Y', 'R', 'I', 'L'],
-    ['E', 'S', 'S', 'A', 'R'],
-    ['B', 'L', 'A', 'C', 'K'],
-    ['L', 'I', 'O', 'N', 'S'],
-    ['N', 'O', 'B', 'L', 'E'],
-    ['B', 'R', 'A', 'V', 'E'],
-    ['D', 'E', 'V', 'I', 'L'],
-    ['D', 'E', 'M', 'O', 'N'],
-    ['S', 'T', 'E', 'E', 'L'],
-    ['V', 'E', 'N', 'I', 'N'],
-    ['I', 'N', 'D', 'R', 'A'],
-    ['S', 'P', 'E', 'A', 'R'],
-    ['A', 'S', 'S', 'A', 'L'],
-    ['M', 'A', 'G', 'I', 'C'],
-    ['V', 'A', 'J', 'R', 'A'],
-    ['A', 'U', 'B', 'I', 'N'],
-    ['B', 'E', 'A', 'S', 'T'],
-    ['S', 'P', 'E', 'E', 'D'],
-    ['S', 'T', 'A', 'F', 'F'],
-    ['F', 'A', 'I', 'T', 'H'],
-    ['A', 'E', 'G', 'I', 'S'],
-    ['D', 'R', 'O', 'M', 'I'],
-    ['C', 'H', 'E', 'S', 'T'],
-    ['T', 'O', 'R', 'C', 'H'],
-    ['A', 'G', 'N', 'E', 'A'],
-    ['H', 'A', 'D', 'E', 'S'],
-    ['S', 'W', 'A', 'R', 'M'],
-    ['B', 'R', 'A', 'W', 'L'],
-    ['F', 'A', 'I', 'R', 'E'],
-    ['R', 'A', 'L', 'L', 'Y'],
-    ['C', 'H', 'A', 'R', 'M'],
-    ['W', 'R', 'A', 'T', 'H'],
-    ['A', 'S', 'T', 'R', 'A'],
-    ['S', 'H', 'O', 'V', 'E'],
-    ['S', 'M', 'I', 'T', 'E'],
-    ['B', 'L', 'A', 'Z', 'E'],
-    ['S', 'A', 'U', 'N', 'A'],
-    ['M', 'I', 'G', 'H', 'T'],
-    ['D', 'E', 'D', 'U', 'E'],
-    ['C', 'L', 'A', 'S', 'S'],
-    ['H', 'O', 'U', 'S', 'E'],
-  ];
-  
-  //const correctLetters = ['A', 'E', 'G', 'I', 'R'];
-  const row1Letters = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
-  const row2Letters = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
-  const row3Letters = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
-
-  const initialKeyBoardStatus: ILetterStatus = {
-    'A': 'unchosen',
-    'B': 'unchosen',
-    'C': 'unchosen',
-    'D': 'unchosen',
-    'E': 'unchosen',
-    'F': 'unchosen',
-    'G': 'unchosen',
-    'H': 'unchosen',
-    'I': 'unchosen',
-    'J': 'unchosen',
-    'K': 'unchosen',
-    'L': 'unchosen',
-    'M': 'unchosen',
-    'N': 'unchosen',
-    'O': 'unchosen',
-    'P': 'unchosen',
-    'Q': 'unchosen',
-    'R': 'unchosen',
-    'S': 'unchosen',
-    'T': 'unchosen',
-    'U': 'unchosen',
-    'V': 'unchosen',
-    'W': 'unchosen',
-    'X': 'unchosen',
-    'Y': 'unchosen',
-    'Z': 'unchosen',
-  };
+  const initialSquareStatusesForHook = denestSquareStatusGrid(initialSquareStatuses);
+  const initialNotUsedAnswersForHook = answers();
+  const initialEnteredLettersForHook = denestArrayOfArrays([...initialEnteredLetters]);
 
   const [gameWinState, setGameWinState] = useState<gameWinStateType>('playing');
-  const [enteredLetters, setEnteredLetters] = useState(initialEnteredLetters);
-  const [keyBoardStatus, setKeyBoardStatus] = useState(initialKeyBoardStatus);
-  const [squareStatuses, setSquareStatuses] = useState<squareStatusGrid>(initialSquareStatuses);
+  const [enteredLetters, setEnteredLetters] = useState(initialEnteredLettersForHook);
+  const [keyBoardStatus, setKeyBoardStatus] = useState({...initialKeyBoardStatus});
+  const [squareStatuses, setSquareStatuses] = useState(initialSquareStatusesForHook);
   const [typedLetters, setTypedLetters] = useState<string[]>([]);
   const [currentRow, setCurrentRow] = useState(0);
   const [currentCorrect, setCurrentCorrect] = useState('');
+  const [correctGuessListWords, setCorrectGuessListWords] = useState<string[][]>([]);
+  const [showCorrectList, setShowCorrectList] = useState(false);
+  const [notUsedAnswers, setNotUsedAnswers] = useState(initialNotUsedAnswersForHook);
   // const [shakeClass, setShakeClass] = useState('');
 
   // const shakeClassCss = useMemo(() => {
   //   return shakeClass;
   // }, [shakeClass]);
 
-  const correctLetters = useMemo(() => {
-    return answers[Math.floor(Math.random() * answers.length)];
+  const voiceRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (gameWinState === 'won') {
+      if (voiceRef.current) voiceRef.current.play();
+    }
   }, [gameWinState]);
+
+  const correctLetters = useMemo(() => {
+    return notUsedAnswers[Math.floor(Math.random() * answers.length)] ?? [''];
+  }, [gameWinState]);
+
+  const correctGuessDisplay = useMemo(() => {
+    return correctGuessListWords.length;
+  }, [correctGuessListWords]);
+
+  const remainingWordsDisplay = useMemo(() => {
+    return notUsedAnswers.length;
+  }, [notUsedAnswers]);
   
   const hiddenInput = useId();
   const hiddenInputRef = useRef<HTMLInputElement>(null);
 
   const fiveCorrect = useMemo(() => {
     let count = 0;
-    for (let key in keyBoardStatus) {
-      if (keyBoardStatus[key] === 'correct') {
+    if (currentRow === 0) return 0;
+    squareStatuses[currentRow - 1].forEach((l) => {
+      if (l === 'correct') {
         count += 1;
       }
-    }
+    })
     return count;
-  }, [keyBoardStatus]);
+  }, [squareStatuses]);
 
   useEffect(() => {
+    console.log(fiveCorrect, correctLetters, 'fiveCorrect and correctLetters')
     setCurrentCorrect(correctLetters.join(''));
     if (fiveCorrect === 5) {
       setTimeout(() => {
@@ -165,6 +94,37 @@ function App() {
       }, 500);
     }
   }, [currentRow, fiveCorrect]);
+
+  const playAgain: playAgainType = function() {
+    console.log(initialSquareStatuses)
+    setKeyBoardStatus({...initialKeyBoardStatus});
+    setSquareStatuses(denestSquareStatusGrid(initialSquareStatuses));
+    
+    setEnteredLetters(denestArrayOfArrays(initialEnteredLetters));
+    setCurrentRow(0);
+    
+    if (gameWinState === 'lost') {
+      setCorrectGuessListWords([]);
+      setNotUsedAnswers(answers);
+    } else {
+      const list = denestArrayOfArrays(correctGuessListWords);
+      console.log(list, typedLetters, 'list and typedLetters')
+      // const newEntry = [...typedLetters];
+      const newEntry = [currentCorrect];
+      list.push(newEntry);
+      setCorrectGuessListWords([...list]);
+
+      const newNotUsedAnswers = denestArrayOfArrays(notUsedAnswers);
+      const usedIndex = newNotUsedAnswers.findIndex((word) => {
+        return word.join('') === newEntry.join('');
+      });
+      const modNotUsedAnswers = [...newNotUsedAnswers.slice(0, usedIndex), ...newNotUsedAnswers.slice(usedIndex + 1)];
+      setNotUsedAnswers([...modNotUsedAnswers]);
+    }
+    setCurrentCorrect('');
+    setGameWinState('playing');
+    setTypedLetters([]);
+  };
 
   function enterLetterChoice() {
     // console.log(correctLetters, 'correct')
@@ -179,7 +139,7 @@ function App() {
     
     const newTyped = [...typedLetters];
     const newKeyBoard = {...keyBoardStatus};
-    const newSquareStatuses = {...squareStatuses};
+    const newSquareStatuses = denestSquareStatusGrid(squareStatuses);
     const numberOfEachLetter: Record<string, number> = {};
     
     correctLetters.forEach((l) => {
@@ -262,7 +222,7 @@ function App() {
       return;
     } else {
       if (letter === 'Del' || letter === 'Ent') return;
-      const newEnteredLetters = [...enteredLetters];
+      const newEnteredLetters = denestArrayOfArrays(enteredLetters);
       const newTyped = [...typedLetters];
       
       newTyped.push(letter.toUpperCase());
@@ -284,7 +244,7 @@ function App() {
     } else {
       const newTyped = [...typedLetters];
       const newKeyboard = {...keyBoardStatus};
-      const newEnteredLetters = [...enteredLetters];
+      const newEnteredLetters = denestArrayOfArrays(enteredLetters);
       const removedLetter = newTyped[newTyped.length - 1];
       newTyped.pop();
       newEnteredLetters[currentRow] = [...newTyped];
@@ -322,24 +282,23 @@ function App() {
     return box;
   }, [squareStatuses, enteredLetters]);
 
-  const playAgain: playAgainType = function() {
-    setKeyBoardStatus(initialKeyBoardStatus);
-    setSquareStatuses(initialSquareStatuses);
-    setTypedLetters([]);
-    setEnteredLetters(initialEnteredLetters);
-    setCurrentRow(0);
-    setGameWinState('playing');
-  };
-
   return (
     <div>
       <label htmlFor={hiddenInput}></label>
       <input onBlur={refocusInput} ref={hiddenInputRef} name="hidden-input" id={hiddenInput} className="hidden-input" autoFocus={true} onKeyDown={(e) => addDeleteTypedLetters(e)}></input>
-      {gameWinState === 'won' || gameWinState === 'lost' ? <WinScreen winWord={currentCorrect} face={face} voice={voice} wonOrLost={gameWinState} playAgain={playAgain}/> : 
+      {gameWinState === 'won' || gameWinState === 'lost' ? <WinScreen winWord={currentCorrect} face={face} wonOrLost={gameWinState} playAgain={playAgain}/> : 
       <div className={"whole-display"}>
         <h1>
           Ferdle
         </h1>
+        <h2>
+          Correct Guesses: {correctGuessDisplay}<br></br>
+          Remaining Words: {remainingWordsDisplay}
+          <button onClick={() => setShowCorrectList(!showCorrectList)}>{showCorrectList ? "Hide" : "Show"}</button>
+        </h2>
+        <div>
+          {showCorrectList ? <CorrectGuessList list={correctGuessListWords} /> : null}
+        </div>
         <div className={"square-container"}>
           {squares.map((row, ind) => {
             return <div key={ind} className={"answer-square-row-container "}>{row}</div>
@@ -366,6 +325,7 @@ function App() {
         </div>
       </div>
 }
+<audio src={voice} autoPlay={false} preload={'auto'} ref={voiceRef}></audio>
     </div>
   )
 }

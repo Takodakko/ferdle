@@ -124,3 +124,13 @@ cursor {
   90% { transform: translate(1px, 2px) rotate(0deg); }
   100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+
+.correct-list {
+  z-index: 500;
+  border: solid;
+  border-color: white;
+  background-color: black;
+  width: 30%;
+  position: absolute;
+  left: 65%;
+}

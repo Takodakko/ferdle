@@ -1,6 +1,6 @@
 type squareStatus = 'correct' | 'partial' | 'no';
 
-interface squareStatusGrid extends Array<squareStatus[]> {
+interface squareStatusGrid extends Record<string, squareStatus[]> {
     0: squareStatus[],
     1: squareStatus[],
     2: squareStatus[],

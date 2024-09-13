@@ -1,8 +1,8 @@
 import { playAgainType, gameWinStateType } from '../appTypes';
 import { useRef, useEffect } from 'react';
 
-function WinScreen(props: {playAgain: playAgainType, wonOrLost: gameWinStateType, voice: string, face: string, winWord: string}) {
-    const { playAgain, wonOrLost, voice, face, winWord } = props;
+function WinScreen(props: {playAgain: playAgainType, wonOrLost: gameWinStateType, face: string, winWord: string}) {
+    const { playAgain, wonOrLost, face, winWord } = props;
     const playAgainButton = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
@@ -13,7 +13,6 @@ function WinScreen(props: {playAgain: playAgainType, wonOrLost: gameWinStateType
 
     const displayFace = wonOrLost === 'won' ? <div>
     <img style={{height: '50%', width: '50%'}} src={face}></img>
-    <audio autoPlay={true} src={voice}></audio>
   </div> : <div>How ignoble of you!</div>;
 
     const correctDisplay = wonOrLost === 'lost' ? <div>
