@@ -12,7 +12,7 @@ function WinScreen(props: {playAgain: playAgainType, wonOrLost: gameWinStateType
     }, [playAgainButton.current, wonOrLost]);
 
     const displayFace = wonOrLost === 'won' ? <div>
-    <img style={{height: '50%', width: '50%'}} src={face}></img>
+    <img style={{height: '50%', width: '50%'}} src={face} alt="Ferdinand's Face"></img>
   </div> : <div>How ignoble of you!</div>;
 
     const correctDisplay = wonOrLost === 'lost' ? <div>
@@ -23,7 +23,7 @@ function WinScreen(props: {playAgain: playAgainType, wonOrLost: gameWinStateType
     <div>
         {correctDisplay}
         {displayFace}
-        <button ref={playAgainButton} onClick={playAgain}>Play Again?</button>
+        <button tabIndex={0} ref={playAgainButton} onClick={playAgain} aria-label="Play Again" type="button">Play Again?</button>
     </div>
   )
 };

@@ -28,6 +28,14 @@
     }
   }
 
+.square:focus {
+    outline: auto;
+    outline-color: brown;
+    outline-width: 5px;
+    color: purple;
+    background-color: antiquewhite;
+}
+
 .current-row-square {
     border-color: red;
 }

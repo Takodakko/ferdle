@@ -40,6 +40,7 @@ function App() {
   const [correctGuessListWords, setCorrectGuessListWords] = useState<string[][]>([]);
   const [showCorrectList, setShowCorrectList] = useState(false);
   const [notUsedAnswers, setNotUsedAnswers] = useState(initialNotUsedAnswersForHook);
+  const [tabNavigateMode, setTabNavigateMode] = useState(false);
   // const [shakeClass, setShakeClass] = useState('');
 
   // const shakeClassCss = useMemo(() => {
@@ -47,6 +48,7 @@ function App() {
   // }, [shakeClass]);
 
   const voiceRef = useRef<HTMLAudioElement>(null);
+  const qRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (gameWinState === 'won') {
@@ -192,11 +194,19 @@ function App() {
     if (event.ctrlKey || event.metaKey || event.altKey) {
       return;
     }
-    event.preventDefault();
     
     const letters = /^[a-zA-Z]+$/;
     const pressedKey = event.key;
-    
+
+    if (pressedKey === 'Tab' && tabNavigateMode) {
+      return;
+    }
+    event.preventDefault();
+    if (pressedKey === 'Escape') {
+      console.log(pressedKey, 'tab navigation mode')
+      setTabNavigateMode(true);
+      if (qRef.current) qRef.current.focus();
+    }
     if (pressedKey === 'Delete' || pressedKey === 'Backspace') {
       if (typedLetters.length === 0) return;
       clickDeleteLetter();
@@ -208,7 +218,7 @@ function App() {
         enterLetterChoice();
         return;
       }
-    } else if (letters.test(pressedKey)) {
+    } else if (letters.test(pressedKey) && pressedKey.length === 1) {
       clickAddLetterToTyped(pressedKey.toUpperCase());
       return;
     }  else {
@@ -218,10 +228,20 @@ function App() {
 
   const clickAddLetterToTyped: clickAddLetterType = function(letter: string) {
     if (currentRow > 5 || fiveCorrect === 5) return;
-    if (typedLetters.length === 5) {
-      return;
-    } else {
-      if (letter === 'Del' || letter === 'Ent') return;
+    
+      if (letter === 'Del') {
+        if (typedLetters.length > 0) {
+          clickDeleteLetter();
+        }
+        return;
+      }
+      if (letter === 'Ent') {
+        if (typedLetters.length === 5) {
+          enterLetterChoice();
+        }
+        return;
+      }
+      if (typedLetters.length === 5) return;
       const newEnteredLetters = denestArrayOfArrays(enteredLetters);
       const newTyped = [...typedLetters];
       
@@ -234,7 +254,7 @@ function App() {
       setTypedLetters([...newTyped]);
       setKeyBoardStatus({...newKeyBoard});
       setEnteredLetters([...newEnteredLetters]);
-    }
+    
   };
 
   const clickDeleteLetter: clickDeleteLetterType = function() {
@@ -256,13 +276,13 @@ function App() {
   };
 
   useEffect(() => {
-    if (gameWinState === 'playing' && hiddenInputRef.current) {
+    if (gameWinState === 'playing' && hiddenInputRef.current && !tabNavigateMode) {
       hiddenInputRef.current.focus();
     }
   });
   
   const refocusInput = function() {
-    if (gameWinState === 'playing' && hiddenInputRef.current) {
+    if (gameWinState === 'playing' && hiddenInputRef.current && !tabNavigateMode) {
       hiddenInputRef.current.focus();
     }
   };
@@ -279,7 +299,7 @@ function App() {
   const isMobile = isMobileTablet();
 
   const hiddenInputHtml = isMobile ? null : <div><label htmlFor={hiddenInput}></label>
-  <input onBlur={refocusInput} ref={hiddenInputRef} name="hidden-input" id={hiddenInput} className="hidden-input" autoFocus={true} onKeyDown={(e) => addDeleteTypedLetters(e)}></input></div>;
+  <input tabIndex={0} aria-label="Input letters or escape to tab through page" onFocus={() => setTabNavigateMode(false)} onBlur={refocusInput} ref={hiddenInputRef} name="hidden-input" id={hiddenInput} className="hidden-input" autoFocus={true} onKeyDown={(e) => addDeleteTypedLetters(e)}></input><br></br>{tabNavigateMode ? 'Use tab to navigate the screen' : 'Enter letters on the keyboard or press escape to use tab'}</div>;
 
   const squares = useMemo(() => {
     const box = [];
@@ -298,7 +318,6 @@ function App() {
 
   return (
     <div>
-      {hiddenInputHtml}
       {gameWinState === 'won' || gameWinState === 'lost' ? <WinScreen winWord={currentCorrect} face={face} wonOrLost={gameWinState} playAgain={playAgain}/> : 
       <div className={"whole-display"}>
         <h2>
@@ -307,7 +326,7 @@ function App() {
         <h3>
           Correct Guesses: {correctGuessDisplay}<br></br>
           Remaining Words: {remainingWordsDisplay} 
-          <button onClick={() => setShowCorrectList(!showCorrectList)}>{showCorrectList ? "Hide" : "Show"}</button>
+          <button type="button" tabIndex={0} onClick={() => setShowCorrectList(!showCorrectList)} aria-label={showCorrectList ? 'Hide List of Correct' : 'Show List of Correct'}>{showCorrectList ? "Hide" : "Show"}</button>
         </h3>
         <div>
           {showCorrectList ? <CorrectGuessList list={correctGuessListWords} /> : null}
@@ -317,8 +336,9 @@ function App() {
             return <div key={ind} className={"answer-square-row-container "}>{row}</div>
           })}
         </div>
+        {hiddenInputHtml}
         <div className="keyboard">
-          <div className="keyboard-row" onKeyDown={addDeleteTypedLetters}>
+          <div ref={qRef} className="keyboard-row" onKeyDown={addDeleteTypedLetters}>
             <KeyBoardRow keys={row1Letters} typedLetters={typedLetters} keyBoardStatus={keyBoardStatus} clickAddLetter={clickAddLetterToTyped}/>
           </div>
           <div className="keyboard-row">

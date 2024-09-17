@@ -190,3 +190,9 @@ cursor {
     padding-right: 1rem;
   }
 }
+
+.button-in-key {
+  border: none;
+  width: 100%;
+  height: 100%;
+}

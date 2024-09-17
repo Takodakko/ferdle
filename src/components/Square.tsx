@@ -11,8 +11,14 @@ function Square(props: {squareStatus: squareStatus, enteredLetter: string, curre
         squareClass = squareClass + ` ${squareStatus}`;
         return squareClass;
     };
+
+    const ariaLabel = () => {
+        const letterLabel = enteredLetter ?? 'empty';
+        return 'square ' + letterLabel + ' ' + squareStatus;
+    };
+
     return (
-        <div className={squareClass()}>
+        <div className={squareClass()} aria-label={ariaLabel()}>
           {enteredLetter}
         </div>
     )
