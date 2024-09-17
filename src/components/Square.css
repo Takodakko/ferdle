@@ -1,4 +1,5 @@
-.square {
+@media screen and (min-width: 60rem) {
+  .square {
     height: 40px;
     width: 40px;
     border: solid;
@@ -9,25 +10,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
 }
+
+@media screen and (max-width: 59rem) {
+    .square {
+      height: 20px;
+      width: 20px;
+      border: solid;
+      border-color: white;
+      margin: 2px;
+      color: black;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 
 .current-row-square {
     border-color: red;
 }
-
-.delete-enter-key {
-    height: 40px;
-    width: 80px;
-    border: solid;
-    border-color: white;
-    margin: 5px;
-    color: black;
-    font-size: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(219, 213, 213);
-  }
 
 .correct {
     background-color: lime;

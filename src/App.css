@@ -56,11 +56,22 @@
   flex-direction: row;
 }
 
-.keyboard {
-  margin: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+@media screen and (min-width: 60rem) {
+  .keyboard {
+    margin: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 59rem) {
+  .keyboard {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .typed-key {
@@ -89,11 +100,54 @@
   background-color: rgb(219, 213, 213);
 }
 
-.hidden-input {
-  background-color: inherit;
-  border: none;
-  opacity: 0%;
-  height: 1px;
+@media screen and (min-width: 60rem) {
+  .delete-enter-key {
+    height: 40px;
+    width: 80px;
+    border: solid;
+    border-color: white;
+    margin: 5px;
+    color: black;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(219, 213, 213);
+  }
+}
+
+@media screen and (max-width: 59rem) {
+  .delete-enter-key {
+    height: 20px;
+    width: 40px;
+    border: solid;
+    border-color: white;
+    margin: 2px;
+    color: black;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(219, 213, 213);
+  }
+}
+
+@media screen and (min-width: 60rem) {
+  .hidden-input {
+    background-color: inherit;
+    border: none;
+    opacity: 0%;
+    height: 1px;
+  }
+}
+
+@media screen and (max-width: 59rem) {
+  .hidden-input {
+    background-color: inherit;
+    border: none;
+    opacity: 0%;
+    height: 1px;
+  }
 }
 
 .hidden-input:focus,
@@ -125,12 +179,25 @@ cursor {
   100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
-.correct-list {
-  z-index: 500;
-  border: solid;
-  border-color: white;
-  background-color: black;
-  width: 30%;
-  position: absolute;
-  left: 65%;
+@media screen and (min-width: 60rem) {
+  .correct-list {
+    z-index: 500;
+    border: solid;
+    border-color: white;
+    background-color: black;
+    width: 30%;
+    position: absolute;
+    left: 65%;
+  }
+}
+
+@media screen and (max-width: 59rem) {
+  .correct-list {
+    z-index: 500;
+    border: solid;
+    border-color: white;
+    background-color: black;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
